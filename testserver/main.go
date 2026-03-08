@@ -3,16 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
-)
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "server running %v\n", time.Now())
-}
+	"hotreload/testserver/handlers"
+)
 
 func main() {
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", handlers.HelloHandler)
 
 	fmt.Println("server started on :8080")
 

@@ -7,11 +7,14 @@ import (
 
 var ignoredDirs = map[string]bool{
 	".git":         true,
+	".idea":        true,
+	".vscode":      true,
+	".hotreload":   true,
 	"node_modules": true,
 	"bin":          true,
 	"build":        true,
 	"dist":         true,
-	".hotreload":   true,
+	"vendor":       true,
 }
 
 var ignoredExtensions = map[string]bool{
@@ -19,6 +22,7 @@ var ignoredExtensions = map[string]bool{
 	".swp": true,
 	".swo": true,
 	".log": true,
+	".out": true,
 }
 
 func ShouldIgnore(path string) bool {
@@ -35,11 +39,11 @@ func ShouldIgnore(path string) bool {
 		return true
 	}
 
-	if strings.HasPrefix(base, ".#") {
+	if strings.HasSuffix(base, "~") {
 		return true
 	}
 
-	if strings.HasSuffix(base, "~") {
+	if strings.HasPrefix(base, ".#") {
 		return true
 	}
 

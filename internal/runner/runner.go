@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
+	"time"
 
 	"hotreload/internal/logging"
 )
@@ -11,16 +12,22 @@ import (
 type Runner struct {
 	cmdStr string
 	cmd    *exec.Cmd
+
+	lastStart time.Time
 }
 
 func New(execCmd string) *Runner {
-
 	return &Runner{
 		cmdStr: execCmd,
 	}
 }
 
 func (r *Runner) Start() error {
+
+	// crash loop protection
+	if time.Since(r.lastStart) < 2*time.Second {
+		time.Sleep(2 * time.Second)
+	}
 
 	logging.LogWorkflow("runner", "Start", "started")
 
@@ -35,12 +42,12 @@ func (r *Runner) Start() error {
 
 	err := cmd.Start()
 	if err != nil {
-
 		logging.LogError("runner", "Start", err)
 		return err
 	}
 
 	r.cmd = cmd
+	r.lastStart = time.Now()
 
 	logging.LogWorkflow("runner", "Start", "success")
 
@@ -57,14 +64,12 @@ func (r *Runner) Stop() error {
 
 	pgid, err := syscall.Getpgid(r.cmd.Process.Pid)
 	if err != nil {
-
 		logging.LogError("runner", "Getpgid", err)
 		return err
 	}
 
 	err = syscall.Kill(-pgid, syscall.SIGKILL)
 	if err != nil {
-
 		logging.LogError("runner", "KillGroup", err)
 		return err
 	}

@@ -21,6 +21,7 @@ func New(buildCmd string) *Builder {
 func (b *Builder) Build() error {
 
 	logging.LogWorkflow("builder", "Build", "started")
+	os.MkdirAll("bin", 0755)
 
 	cmd := exec.Command("sh", "-c", b.cmd)
 

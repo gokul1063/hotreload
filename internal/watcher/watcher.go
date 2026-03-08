@@ -82,6 +82,10 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		return
 	}
 
+	if filepath.Ext(path) != ".go" {
+		return
+	}
+
 	// if new directory created -> watch it
 	if event.Op&fsnotify.Create == fsnotify.Create {
 
@@ -95,11 +99,12 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		}
 	}
 
-	select {
-	case w.events <- struct{}{}:
-	default:
+	if event.Op&(fsnotify.Write|fsnotify.Create|fsnotify.Remove|fsnotify.Rename) != 0 {
+		select {
+		case w.events <- struct{}{}:
+		default:
+		}
 	}
-
 	logging.LogWorkflow("watcher", "handleEvent", "triggered")
 }
 

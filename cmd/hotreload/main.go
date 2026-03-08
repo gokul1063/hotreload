@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"hotreload/internal/builder"
 	"hotreload/internal/cli"
-	"hotreload/internal/debounce"
 	"hotreload/internal/logging"
-	"hotreload/internal/watcher"
+	"hotreload/internal/runner"
 )
 
 func main() {
@@ -20,31 +20,48 @@ func main() {
 
 	cfg, err := cli.Parse()
 	if err != nil {
+
+		logging.LogError("cli", "Parse", err)
 		fmt.Println(err)
 		return
 	}
 
-	w, err := watcher.New(cfg.Root)
+	logging.LogWorkflow("main", "ParseCLI", "success")
+
+	fmt.Println("Root :", cfg.Root)
+	fmt.Println("Build:", cfg.Build)
+	fmt.Println("Exec :", cfg.Exec)
+
+	b := builder.New(cfg.Build)
+
+	err = b.Build()
 	if err != nil {
-		fmt.Println(err)
+
+		fmt.Println("build failed")
 		return
 	}
 
-	w.Start()
+	fmt.Println("build success")
 
-	db := debounce.New(300 * time.Millisecond)
+	r := runner.New(cfg.Exec)
 
-	fmt.Println("watching:", cfg.Root)
+	err = r.Start()
+	if err != nil {
 
-	go func() {
-		for range w.Events() {
-			db.Trigger()
-		}
-	}()
-
-	for range db.Events() {
-		fmt.Println("debounced change detected")
+		fmt.Println("server start failed")
+		return
 	}
 
-	fmt.Println("debounced change detected")
+	fmt.Println("server running for 10 seconds")
+
+	time.Sleep(10 * time.Second)
+
+	err = r.Stop()
+	if err != nil {
+
+		fmt.Println("server stop failed")
+		return
+	}
+
+	fmt.Println("server stopped")
 }

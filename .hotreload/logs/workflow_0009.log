@@ -1,0 +1,7 @@
+time=2026-03-08T23:08:16.916+05:30 level=INFO msg=workflow package=main function=ParseCLI status=success time=2026-03-08T17:38:16.916Z
+time=2026-03-08T23:08:16.916+05:30 level=INFO msg=workflow package=builder function=Build status=started time=2026-03-08T17:38:16.916Z
+time=2026-03-08T23:08:17.219+05:30 level=INFO msg=workflow package=builder function=Build status=success time=2026-03-08T17:38:17.219Z
+time=2026-03-08T23:08:17.219+05:30 level=INFO msg=workflow package=runner function=Start status=started time=2026-03-08T17:38:17.219Z
+time=2026-03-08T23:08:17.219+05:30 level=INFO msg=workflow package=runner function=Start status=success time=2026-03-08T17:38:17.219Z
+time=2026-03-08T23:08:27.227+05:30 level=INFO msg=workflow package=runner function=Stop status=started time=2026-03-08T17:38:27.227Z
+time=2026-03-08T23:08:27.227+05:30 level=INFO msg=workflow package=runner function=Stop status=success time=2026-03-08T17:38:27.227Z

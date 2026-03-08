@@ -43,7 +43,6 @@ func main() {
 
 	e := engine.New(w, b, r)
 
-	// handle ctrl+c / termination
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 

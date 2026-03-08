@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"hotreload/internal/builder"
 	"hotreload/internal/cli"
@@ -27,8 +30,6 @@ func main() {
 		return
 	}
 
-	logging.LogWorkflow("main", "ParseCLI", "success")
-
 	w, err := watcher.New(cfg.Root)
 	if err != nil {
 
@@ -38,14 +39,22 @@ func main() {
 	}
 
 	b := builder.New(cfg.Build)
-
 	r := runner.New(cfg.Exec)
 
 	e := engine.New(w, b, r)
 
+	// handle ctrl+c / termination
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-sig
+		r.Stop()
+		os.Exit(0)
+	}()
+
 	err = e.Start()
 	if err != nil {
-
 		fmt.Println("engine failed:", err)
 	}
 }

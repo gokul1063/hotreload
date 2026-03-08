@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"sync"
 	"time"
 
 	"hotreload/internal/builder"
@@ -15,6 +16,8 @@ type Engine struct {
 	builder *builder.Builder
 	runner  *runner.Runner
 	deb     *debounce.Debouncer
+
+	mu sync.Mutex
 }
 
 func New(
@@ -37,14 +40,12 @@ func (e *Engine) Start() error {
 
 	err := e.builder.Build()
 	if err != nil {
-
 		logging.LogError("engine", "InitialBuild", err)
 		return err
 	}
 
 	err = e.runner.Start()
 	if err != nil {
-
 		logging.LogError("engine", "RunnerStart", err)
 		return err
 	}
@@ -70,24 +71,24 @@ func (e *Engine) Start() error {
 
 func (e *Engine) reload() {
 
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	logging.LogWorkflow("engine", "Reload", "triggered")
 
-	err := e.builder.Build()
+	err := e.runner.Stop()
 	if err != nil {
+		logging.LogError("engine", "RunnerStop", err)
+	}
 
+	err = e.builder.Build()
+	if err != nil {
 		logging.LogError("engine", "Build", err)
 		return
 	}
 
-	err = e.runner.Stop()
-	if err != nil {
-
-		logging.LogError("engine", "RunnerStop", err)
-	}
-
 	err = e.runner.Start()
 	if err != nil {
-
 		logging.LogError("engine", "RunnerStart", err)
 	}
 }

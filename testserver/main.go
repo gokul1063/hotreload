@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "test server running")
+	fmt.Fprintf(w, "server running %v\n", time.Now())
 }
 
 func main() {

@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"hotreload/internal/builder"
 	"hotreload/internal/cli"
+	"hotreload/internal/engine"
 	"hotreload/internal/logging"
 	"hotreload/internal/runner"
+	"hotreload/internal/watcher"
 )
 
 func main() {
@@ -28,40 +29,23 @@ func main() {
 
 	logging.LogWorkflow("main", "ParseCLI", "success")
 
-	fmt.Println("Root :", cfg.Root)
-	fmt.Println("Build:", cfg.Build)
-	fmt.Println("Exec :", cfg.Exec)
+	w, err := watcher.New(cfg.Root)
+	if err != nil {
+
+		logging.LogError("watcher", "New", err)
+		fmt.Println(err)
+		return
+	}
 
 	b := builder.New(cfg.Build)
 
-	err = b.Build()
-	if err != nil {
-
-		fmt.Println("build failed")
-		return
-	}
-
-	fmt.Println("build success")
-
 	r := runner.New(cfg.Exec)
 
-	err = r.Start()
+	e := engine.New(w, b, r)
+
+	err = e.Start()
 	if err != nil {
 
-		fmt.Println("server start failed")
-		return
+		fmt.Println("engine failed:", err)
 	}
-
-	fmt.Println("server running for 10 seconds")
-
-	time.Sleep(10 * time.Second)
-
-	err = r.Stop()
-	if err != nil {
-
-		fmt.Println("server stop failed")
-		return
-	}
-
-	fmt.Println("server stopped")
 }

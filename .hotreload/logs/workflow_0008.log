@@ -1,3 +1,0 @@
-time=2026-03-08T23:06:58.357+05:30 level=INFO msg=workflow package=main function=ParseCLI status=success time=2026-03-08T17:36:58.357Z
-time=2026-03-08T23:06:58.357+05:30 level=INFO msg=workflow package=builder function=Build status=started time=2026-03-08T17:36:58.357Z
-time=2026-03-08T23:07:02.196+05:30 level=INFO msg=workflow package=builder function=Build status=success time=2026-03-08T17:37:02.196Z
